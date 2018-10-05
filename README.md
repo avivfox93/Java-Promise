@@ -11,10 +11,10 @@ Usage
         else
             throw new PromiseCatchException(errMessage, statusCode, data); //String, int, Object
     });
-    promise.then((result)->{ // T result
+    promise.then((result)->{ // Run if promise returns result. T result
        do somthing with result... 
     });
-    promise.not((error)-> { // PromiseCatchException error
+    promise.not((error)-> { // Run if promise throws PromiseCatchException PromiseCatchException error
         do somthing with error... // message, statusCode, data
     });
     promise.cancelled(()->{ // When promise.cancel() called. no arguments
