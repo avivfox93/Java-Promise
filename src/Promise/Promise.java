@@ -80,7 +80,18 @@ public class Promise<R> implements PromiseInterface{
      */
     @Override
     public void run() {
-        this.thread = new Thread(() -> {
+        this.thread = new Thread(makeRunnable());
+        thread.start();
+    }
+
+    @Override
+    public synchronized void runAndWait() {
+        run();
+        while(this.thread.isAlive());
+    }
+
+    private Runnable makeRunnable(){
+        return () -> {
             try {
                 R result = func.run();
                 if (result == null) throw new PromiseCatchException(0);
@@ -92,7 +103,6 @@ public class Promise<R> implements PromiseInterface{
             }finally {
                 for(PromiseAlwaysCallback c : alwaysCallbacks) c.always();
             }
-        });
-        thread.start();
+        };
     }
 }

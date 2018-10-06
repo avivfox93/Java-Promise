@@ -6,6 +6,7 @@ public interface PromiseInterface<T> {
     PromiseInterface always(PromiseAlwaysCallback callback);
     PromiseInterface cancelled(PromiseCancelledCallback callback);
     void run();
+    void runAndWait();
     void cancel();
 }
 interface PromiseThenCallback<T>{
