@@ -8,6 +8,7 @@ public interface PromiseInterface<T> {
     void run();
     void runAndWait();
     void cancel();
+    boolean isRunning();
 }
 interface PromiseThenCallback<T>{
     /**

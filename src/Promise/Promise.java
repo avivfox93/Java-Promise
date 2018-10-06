@@ -10,6 +10,7 @@ public class Promise<R> implements PromiseInterface{
     private final ArrayList<PromiseCancelledCallback> cancelledCallbacks;
     private PromiseFunction<R> func;
     private Thread thread = new Thread();
+    private boolean running = false;
 
     /**
      *
@@ -75,6 +76,7 @@ public class Promise<R> implements PromiseInterface{
         this.thread.interrupt();
     }
 
+
     /**
      * run the promise
      */
@@ -85,14 +87,16 @@ public class Promise<R> implements PromiseInterface{
     }
 
     @Override
-    public synchronized void runAndWait() {
-        run();
-        while(this.thread.isAlive());
+    public void runAndWait() {
+        //run();
+        makeRunnable().run();
+        //while(this.thread.isAlive());
     }
 
     private Runnable makeRunnable(){
         return () -> {
             try {
+                this.running = true;
                 R result = func.run();
                 if (result == null) throw new PromiseCatchException(0);
                 for (PromiseThenCallback<R> c : thenCallbacks) c.thenFunc(result);
@@ -102,7 +106,13 @@ public class Promise<R> implements PromiseInterface{
                 for (PromiseCancelledCallback c : cancelledCallbacks) c.cancelled();
             }finally {
                 for(PromiseAlwaysCallback c : alwaysCallbacks) c.always();
+                this.running = false;
             }
         };
+    }
+
+    @Override
+    public boolean isRunning(){
+        return this.running;
     }
 }
